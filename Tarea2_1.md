@@ -10,7 +10,7 @@ lane3_NoIndex_L003_R1_003.fastq.gz  lane3_NoIndex_L003_R1_008.fastq.gz  lane3_No
 lane3_NoIndex_L003_R1_004.fastq.gz  lane3_NoIndex_L003_R1_009.fastq.gz
 lane3_NoIndex_L003_R1_005.fastq.gz  lane3_NoIndex_L003_R1_010.fastq.gz
 ```
-Then you can run <span style="color:green">**process_radtags**</span> in the following way:
+Then you can run <span style="color:green;">**process_radtags**</span> in the following way:
 
 ```
 % process_radtags -p ./raw/ -o ./samples/ -b ./barcodes/barcodes_lane3 \
