@@ -22,7 +22,7 @@ This repository contains the development of a desktop application using Shiny. T
 - The user will be able to download tables in different formats containing information of their interest.
 
 <p align="center">
-![Table1_example.png](Table1_example.png) ![Table_example.png](Table_example.png)
+![Table_example.png](Table_example.png) 
 </p>
 
 #### Scripts and custom functions
