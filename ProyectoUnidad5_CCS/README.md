@@ -1,13 +1,13 @@
 # README
 
-## Interactive visualization using Shiny package and Arteaga maize dataset
+## Interactive visualization using Shiny package and Arteaga et al. (2016) maize dataset
 
-This repository contains the development of a desktop application using Shiny. The application generates an interactive plot, map, and table for an example exploratory genomic analysis of populations with the Arteaga maize dataset.
+This repository contains the development of a desktop application using [Shiny](https://shiny.rstudio.com/). The application generates an interactive plot, map, and a table with an example of an exploratory genomic analysis of populations with the [Arteaga et al. (2016)](https://www.sciencedirect.com/science/article/pii/S2213596015300714?via%3Dihub) maize dataset.
 
 
 #### Plot
 
-- Consist of a principal component analysis (PCA) of all polymorphic SNP genotypes using `SNPRelate`. The user will be able to select some parameters to modify the plot.
+- Consist of a principal component analysis (PCA) of all polymorphic SNP genotypes using [`SNPRelate`](https://bioconductor.org/packages/release/bioc/html/SNPRelate.html). The user will be able to select some parameters to modify the plot.
 
 ![PCA_example.png](PCA_example.png)
 
@@ -36,8 +36,8 @@ library(SNPRelate)
 library(dplyr)
 library(raster)
 
-## In this part, We will perform the analyzes to generate the data to use in the PCA,
-## the map and the table
+## In this part, We will perform the analysis to generate the data to use in the PCA,
+## map, and table.
 
 #### Packages used for shinydashboard ####
 library(shiny)
