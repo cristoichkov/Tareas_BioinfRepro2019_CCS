@@ -25,7 +25,7 @@ This repository contains the development of a desktop application using [Shiny](
 ![Table_example.png](Table_example.png)
 
 
-#### Scripts and custom functions
+#### Repository Organization
 
 ###### Scripts Shiny app
 - Directory `ProyectoUnidad5_CCS` contains `app.R` file which is organized as follows:
