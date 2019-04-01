@@ -40,7 +40,7 @@ Contains the genomic data of maize in format plink:
 #### Notes
 - We run once the `bin/plink_to_gds.R` script to generate `data/maicesArtegaetal2015.gds`
 - WorldClim variables are downloaded at a resolution of 2.5 and stored in `data/wc2-5`
-- Therefore, in this repository these files are not available, we will beArteaga MC, Moreno-Letelier A, Mastretta-Yanes A, Vázquez-Lobo A, Breña-Ochoa A, Moreno-Estrada A, Eguiarte LE, Piñero D (2015) Data from: Genomic variation in recently collected maize landraces from Mexico. Dryad Digital Repository. available when the user executes the scrips
+- Therefore, in this repository these files are not available, they will be available when the user executes the script
 
 
 #### Credits
