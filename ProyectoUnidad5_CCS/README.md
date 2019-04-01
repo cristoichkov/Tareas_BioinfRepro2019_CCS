@@ -6,19 +6,18 @@ This repository contains the development of a desktop application using [Shiny D
 
 #### Prerequisites
 ##### Software:
-R 3.4.2
-Admixture 1.3
+- R 3.4.2
 
 ##### R packages:
-shiny 1.2.0
-ggplot2 3.1.0
-ape 5.3
-dplyr 0.8.0.1
-raster 2.8.19
-shinydashboard 0.7.1
-plotly 4.8.0
-leaflet 2.0.2
-SNPRelate 1.16.0
+- shiny 1.2.0
+- ggplot2 3.1.0
+- ape 5.3
+- dplyr 0.8.0.1
+- raster 2.8.19
+- shinydashboard 0.7.1
+- plotly 4.8.0
+- leaflet 2.0.2
+- SNPRelate 1.16.0
 
 #### Directories:
 ###### bin
