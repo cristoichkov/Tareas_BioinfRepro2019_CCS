@@ -24,9 +24,9 @@ This repository contains the development of a desktop application using [Shiny D
 Contains scripts `bin/plink_to_gds.R` and `bin/app.R` used for the analysis.
 - First you have to execute the `bin/plink_to_gds.R` script to generate a gds file that is used in the following script
 - The `bin/app.R` script generates the shiny dashboard app. The first part of the script is used to generate and filter the databases used to create three interactive objects:
- * PCA plot.- the user can select the eigenvalue for the x-axis and the and y-axis, and the variable with which the points are colored.
- * Maize distribution map.- this map is associated with the PCA and the points of distribution will be colored according to the variable selected in the graph.   
- * Tables.- the user can download the database of eigenvalues, coordinates and 19 WorldClim variables en formato .csv y .tsv
+   * PCA plot.- the user can select the eigenvalue for the x-axis and the and y-axis, and the variable with which the points are colored.
+   * Maize distribution map.- this map is associated with the PCA and the points of distribution will be colored according to the variable selected in the graph.   
+   * Tables.- the user can download the database of eigenvalues, coordinates and 19 WorldClim variables en formato .csv y .tsv
 
 ###### data
 Contains the genomic data of maize in format plink:
