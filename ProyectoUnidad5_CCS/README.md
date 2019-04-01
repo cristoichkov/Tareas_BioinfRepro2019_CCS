@@ -6,7 +6,7 @@ This repository contains the development of a desktop application using [Shiny D
 
 #### Prerequisites
 ##### Software:
-- R 3.4.2
+- R 3.5.3
 
 ##### R packages:
 - shiny 1.2.0
