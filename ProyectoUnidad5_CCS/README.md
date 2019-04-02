@@ -11,7 +11,6 @@ This repository contains the development of a desktop application using [Shiny D
 ##### R packages:
 - shiny 1.2.0
 - ggplot2 3.1.0
-- ape 5.3
 - dplyr 0.8.0.1
 - raster 2.8.19
 - shinydashboard 0.7.1
