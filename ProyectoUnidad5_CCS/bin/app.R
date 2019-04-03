@@ -9,6 +9,8 @@ library(shinydashboard)
 library(plotly)
 library(leaflet)
 library(SNPRelate)
+library(tidyr)
+
 
 ####### the user can download the database of eigenvalues, coordinates and 19 WorldClim variables #########
 # load the gds file
@@ -73,9 +75,40 @@ for (i in 1:6){
 }
 attr(eigen_names, "names") <- eigen_pca
 
+#### Admixture ###
+## get Q files 
+x <- list.files(paste0("../data/admixture/")) 
+Qfile<-x[grep("*.Q", x) ]
+
+# Loop to create a list with every K
+Qval <- list()
+for (j in 1:length(Qfile)){
+  # read Q file
+  Qval[[j]] <-read.table(paste0("../data/admixture/", Qfile[j]))
+  names(Qval[[j]])<-paste0("K", 1:ncol(Qval[[j]]))
+}
+
+# loop to extract the elements of the list as dataframe
+for (i in 1:length(Qval)) {
+  assign(paste0("Qval", i), as.data.frame(Qval[[i]]))
+}
+
+# combine elements of data frames to create a df for each K
+Qval1 <- cbind(INDIV=samples_names$Indiv, bio1 = tab_corn$bio1, bio12 = tab_corn$bio12, bio3 = tab_corn$bio3, Altitud = tab_corn$Altitud, Qval1)
+Qval2 <- cbind(INDIV=samples_names$Indiv, bio1 = tab_corn$bio1, bio12 = tab_corn$bio12, bio3 = tab_corn$bio3, Altitud = tab_corn$Altitud, Qval2)
+Qval3 <- cbind(INDIV=samples_names$Indiv, bio1 = tab_corn$bio1, bio12 = tab_corn$bio12, bio3 = tab_corn$bio3, Altitud = tab_corn$Altitud, Qval3)
+Qval4 <- cbind(INDIV=samples_names$Indiv, bio1 = tab_corn$bio1, bio12 = tab_corn$bio12, bio3 = tab_corn$bio3, Altitud = tab_corn$Altitud, Qval4)
+Qval5 <- cbind(INDIV=samples_names$Indiv, bio1 = tab_corn$bio1, bio12 = tab_corn$bio12, bio3 = tab_corn$bio3, Altitud = tab_corn$Altitud, Qval5)
+
+# transform to long format  
+Qval1_long<- gather(Qval1, key=Kgroup, value=Qadmixture, 6:ncol(Qval1))
+Qval2_long<- gather(Qval2, key=Kgroup, value=Qadmixture, 6:ncol(Qval2))
+Qval3_long<- gather(Qval3, key=Kgroup, value=Qadmixture, 6:ncol(Qval3))
+Qval4_long<- gather(Qval4, key=Kgroup, value=Qadmixture, 6:ncol(Qval4))
+Qval5_long<- gather(Qval5, key=Kgroup, value=Qadmixture, 6:ncol(Qval5))
+
 
 #### Shiny App #####
-
 ## The user interface (ui) has a title panel and a sidebar layout, which includes a sidebar panel and the main panel
 
 header <- dashboardHeader(title = "Maize Analysis") # title of shiny dashboard
@@ -117,7 +150,16 @@ sidebar <- dashboardSidebar(
                          choices = c("Eigenvalues", "Coordinates", "Worlclime")), ## Create a select list of variables of dataframes to download 
              radioButtons("filetype", "File type:",
                           choices = c("csv", "tsv")),    ## Create options of format to download dataframe
-             downloadButton('downloadData', 'Download')) ## Create the button download
+             downloadButton('downloadData', 'Download')), ## Create the button download
+  
+      menuItem("Admixture", icon = icon("bar-chart-o"),  ## Admixture secction
+             selectInput("Kvalue", "Choose the value for K:", ## select a K 
+                         choices = c("K1" = "Qval1_long", 
+                                     "K2" = "Qval2_long",
+                                     "K3" = "Qval3_long",
+                                     "K4" = "Qval4_long",
+                                     "K5" = "Qval5_long"),
+                         selected = "Qval3_long"))
     
   )
 )
@@ -128,9 +170,10 @@ body <- dashboardBody(
   fluidRow(
     box(title = "PCA", status = "primary", solidHeader = TRUE, plotlyOutput("pcaplot")),
     box(title = "MAP", status = "primary", solidHeader = TRUE, leafletOutput("mymap"),
-        absolutePanel(top = 10, right = 10,
-                      checkboxInput("legend", "Show legend", TRUE))),
-    box(title = "Table", status = "primary", solidHeader = TRUE, tableOutput('table'), style = "height:400px; overflow-y: scroll;overflow-x: scroll;")
+        absolutePanel(top = 10, right = 10)),
+        
+    box(title = "Table", status = "primary", solidHeader = TRUE, tableOutput('table'), style = "height:400px; overflow-y: scroll;overflow-x: scroll;"),
+    box(title = "Structure", status = "primary", solidHeader = TRUE, plotOutput("structure"))
   )
   
 )
@@ -181,10 +224,10 @@ server = function(input, output, session) {
         domain = tab_corn$bio1) # The Color palette will be created from bio1
       leafletProxy("mymap", data = tab_corn) %>%
         clearShapes() %>%
-        addCircleMarkers(lng = ~Longitud, lat = ~Latitud, color = ~pal(bio1),  fillColor = ~pal(bio1), #Los colores de los marcadores circulares se
-                         fillOpacity = 1, popup = ~paste(bio1), radius = 4)  # definen a partir de la paleta creada arriba y bio1
+        addCircleMarkers(lng = ~Longitud, lat = ~Latitud, color = ~pal(bio1),  fillColor = ~pal(bio1), # The colors of the circular markers 
+                         fillOpacity = 1, popup = ~paste(bio1), radius = 4)  # are defined from the palette created above and bio1
     }
-    else if(input$coloring == "bio3"){  # to color from another variable we use else if and we repeat the same process as above
+    else if(input$coloring == "bio3"){  # to color from another variable we use else if and we repeat the same process as above for each variable
       pal <- colorNumeric(
         palette = colorRampPalette(c("#35b7c4", "#4455a0"))(length(tab_corn$bio3)), 
         domain = tab_corn$bio3)
@@ -210,9 +253,8 @@ server = function(input, output, session) {
         clearShapes() %>%
         addCircleMarkers(lng = ~Longitud, lat = ~Latitud, color = ~pal(Altitud),  fillColor = ~pal(Altitud), 
                          fillOpacity = 1, popup = ~paste(Altitud), radius = 4)
-    }
+    } # if there were more variables we would repeat until they were completed
   })
-  
   
   
   ###### TABLE ######
@@ -224,6 +266,7 @@ server = function(input, output, session) {
            "Coordinates" = select(tab_corn, Indiv, Longitud, Latitud), #Selected Coordinates 
            "Worlclime" = select(tab_corn, Indiv, bio1, bio2, bio3, bio4, bio5, bio6, bio7, bio8, bio9, bio10, 
                                 bio11, bio12, bio13, bio14, bio15, bio16, bio17, bio18, bio19) #Selected worlclime variables
+           
     )
   })
   
@@ -252,6 +295,21 @@ server = function(input, output, session) {
                   row.names = FALSE)
     }
   )
+  
+  ###### Admixture ######
+  
+  data_admix <- reactive({get(input$Kvalue)}) # Select the dataframe from each K
+  
+  output$structure <- renderPlot({
+    data_admix1 <- data_admix() 
+    # Order levels of the column that ggplot uses in x so
+    # that they are in the desired order
+    data_admix1$INDIV <- reorder(data_admix1$INDIV, -data_admix1 [,input$coloring]) 
+    # build graph with ggplot syntax
+    ggplot(data_admix1 , aes_string(x="INDIV", y="Qadmixture", fill= "Kgroup")) + geom_col() +
+      theme(axis.text.x= element_blank())
+    
+  })
   
 }
 

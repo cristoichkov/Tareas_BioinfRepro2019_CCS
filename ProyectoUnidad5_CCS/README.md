@@ -17,11 +17,12 @@ This repository contains the development of a desktop application using [Shiny D
 - plotly 4.8.0
 - leaflet 2.0.2
 - SNPRelate 1.16.0
+- tidyr 0.8.3
 
 #### Directories:
 ###### bin
-Contains scripts `bin/plink_to_gds.R` and `bin/app.R` used for the analysis.
-- First you have to execute the `bin/plink_to_gds.R` script to generate a gds file that is used in the following script
+Contains scripts `bin/plink_to_gds.R`, `bin/1-runadmixture.sh` and `bin/app.R` used for the analysis.
+- First you have to execute the `bin/1-runadmixture.sh` and `bin/plink_to_gds.R` script to generate admixture and gds file that is used in the following script.
 - The `bin/app.R` script generates the shiny dashboard app. The first part of the script is used to generate and filter the databases used to create three interactive objects:
    * PCA plot.- the user can select the eigenvalue for the x-axis and the and y-axis, and the variable with which the points are colored.
    * Maize distribution map.- this map is associated with the PCA and the points of distribution will be colored according to the variable selected in the graph.   
@@ -37,7 +38,8 @@ Contains the genomic data of maize in format plink:
 - The file `meta/maizteocintle_SNP50k_meta_extended.txt` contains information about the samples maize, we mainly use latitude and longitude coordinates.
 
 #### Notes
-- We run once the `bin/plink_to_gds.R` script to generate `data/maicesArtegaetal2015.gds`
+- Run once the `bin/1-runadmixture.sh` script to generate `data/admixture` folder
+- Run once the `bin/plink_to_gds.R` script to generate `data/maicesArtegaetal2015.gds`
 - WorldClim variables are downloaded at a resolution of 2.5 and stored in `data/wc2-5`
 - Therefore, in this repository these files are not available, they will be available when the user executes the script
 
