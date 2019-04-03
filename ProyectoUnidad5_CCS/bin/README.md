@@ -12,7 +12,7 @@ $cd admixture_linux-1.3.0
 $sudo mv admixture /usr/local/bin/
 ```
 
-- Run `bin/1-runadmixture.sh` script admixture for K 1-5 and the results are generated in the data/admixture folder.
+- Run `bin/1-runadmixture.sh` script admixture for K 1-5 and the results are generated in the `data/admixture` folder.
 
 ```
 $chmod chmod u+x 1-runadmixture.sh

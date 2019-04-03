@@ -147,7 +147,7 @@ sidebar <- dashboardSidebar(
     
     menuItem("Metadata", icon = icon("table"),             ## Table section
              selectInput("dataset", "Choose a dataset:", 
-                         choices = c("Eigenvalues", "Coordinates", "Worlclime")), ## Create a select list of variables of dataframes to download 
+                         choices = c("Eigenvalues", "Coordinates", "WorldClim")), ## Create a select list of variables of dataframes to download 
              radioButtons("filetype", "File type:",
                           choices = c("csv", "tsv")),    ## Create options of format to download dataframe
              downloadButton('downloadData', 'Download')), ## Create the button download
@@ -264,7 +264,7 @@ server = function(input, output, session) {
     switch(input$dataset,
            "Eigenvalues" = select(tab_corn, Indiv, EV1, EV2, EV3, EV4, EV5, EV6), #Selected eigenvalues of PCA
            "Coordinates" = select(tab_corn, Indiv, Longitud, Latitud), #Selected Coordinates 
-           "Worlclime" = select(tab_corn, Indiv, bio1, bio2, bio3, bio4, bio5, bio6, bio7, bio8, bio9, bio10, 
+           "WorldClim" = select(tab_corn, Indiv, bio1, bio2, bio3, bio4, bio5, bio6, bio7, bio8, bio9, bio10, 
                                 bio11, bio12, bio13, bio14, bio15, bio16, bio17, bio18, bio19) #Selected worlclime variables
            
     )
