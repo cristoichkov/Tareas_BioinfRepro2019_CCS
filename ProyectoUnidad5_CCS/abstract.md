@@ -18,7 +18,7 @@ SNP genotypes are stored in SNP-major mode (Sample X SNP).
 The number of valid samples: 165
 The number of biallelic unique SNPs: 30804
 ```
-Some databases were generated and filtered using the package `dplyr 0.8.0.1` [(Wickham et al., 2019)](https://cran.r-project.org/web/packages/dplyr/index.html). The geographic coordinates of the Maize database were used to get the [WorldClime](https://www.worldclim.org/bioclim) variables using the package `raster 2.8.19` [(Hijmas, 2019)](https://cran.r-project.org/web/packages/raster/index.html).
+Some databases were generated and filtered using the packages `dplyr 0.8.0.1` [(Wickham et al., 2019)](https://cran.r-project.org/web/packages/dplyr/index.html) and `tidyr 0.8.3` [(Wickham and Henry, 2019)](https://cran.r-project.org/web/packages/tidyr/index.html). The geographic coordinates of the Maize database were used to get the [WorldClime](https://www.worldclim.org/bioclim) variables using the package `raster 2.8.19` [(Hijmas, 2019)](https://cran.r-project.org/web/packages/raster/index.html).
 
 
 #### PCA plot
@@ -45,10 +45,10 @@ Fig.2. The distribution points are colored according to the selected variable in
 Fig.3. There are three options of datasets to download and two different formats.
 
 #### Admixture plot
-- The admixture plot allows choosing the number of K, the options are five. Also, the plot colors are ordained according to the variable used in the PCA.
+- The admixture plot allows choosing the number of K, the options are five. Also, the plot colors are ordained according to the variable used in the PCA (Fig. 4).
 
 ![Admixture_example.png](Admixture_example.png)
 
-Fig.4. By default, the admixture plot is K = 5 but you can choose 5 and order the colors according to the variable chosen in the PCA
+Fig.4. By default, the admixture plot is K = 5 but you can choose 5 and order the colors according to the variable chosen in the PCA.
 
 As a final conclusion, creating a shiny application allows you to instantly modify parameters that are important, this facilitates presentations in public when you have a lot of results that can be summarized in interactive graphics. It is also a way to share results when working as a team, people can manipulate your results and make their own conclusions. I think it can be used to show results in digital journals, also in print, by adding a link to see the digital results.
