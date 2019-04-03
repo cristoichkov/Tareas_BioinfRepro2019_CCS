@@ -7,6 +7,7 @@ This repository contains the development of a desktop application using [Shiny D
 #### Prerequisites
 ##### Software:
 - R 3.5.3
+- Admixture 1.3.0
 
 ##### R packages:
 - shiny 1.2.0
