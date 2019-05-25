@@ -10,11 +10,11 @@ El nivel de disimilitud de las secuencias es otro parámetro que también es imp
 
 ### Método propuesto
 
-El programa programa PyRAD fue reescrito completamente para generar un entorno rápido y flexible, también cambió el nombre por ipyrad (Eaton, 2019). El flujo de trabajo de ipyrad está basado en 7 pasos, los dos primeros corresponden a demultiplexear y a la filtración de los datos crudos.
+El programa programa PyRAD fue reescrito completamente para generar un entorno rápido y flexible, también cambió el nombre por ipyrad (Eaton, 2019). El flujo de trabajo de ipyrad está basado en 7 pasos, los dos primeros corresponden a demultiplexear y a la filtración de los datos crudos (Figura 1). Aunque estos pasos se pueden realizar en ipyrad, también existen otros programas para realizar estos pasos previos. Por ejemplo, para demultiplexear Herten et al. (2015) mostraron que este programa tenia mejor rendimiento al momento de recuperar lecturas que Stacks.
 
 * Paso 3 (Clustering).- registra el número de veces que se observa cada lectura única. Si los datos son paired-end (R1 y R2), entonces usa vsearch para combinar las lecturas paired que se superponen. Los datos resultantes se agrupan de novo, las lecturas se combinan en función de la similitud de secuencia y los grupos resultantes se alinean utilizando el algoritmo de muscle (Edgar, 2004). En este paso se aplica el filtro *clust_threshold*, este valor determina el porcentaje de similitud de secuencia que deben tener las lecturas para que se consideren lecturas en el mismo lugar. El valor por defecto es *0.85* y se pretende hacer un ensamble con diferentes valores (Tabla 1).
 
-* En el paso 4 y 5 (Consensus).- se calcula de manera conjunta la tasa de error de secuenciación y la heterocigosidad en función de los recuentos de patrones de sitio en las lecturas agrupadas. Se utiliza un modelo diploide (es decir, se espera que se produzcan dos alelos por igual). Durante este paso, también se filtra el número máximo de sitios no determinados (*Ns*) por locus (*max_Ns_consens*). Se registra el número de alelos en cada locus y la información de profundidad de lectura también se almacena. En este paso de aplica el filtro *mindepth_statistical*, la mayoría de las estimaciones de tasas de error razonables es aproximadamente la profundidad mínima a la que se puede distinguir una llamada de base heterocigótica de un error de secuencia. El valor por defecto es *6* y se pretende hacer un ensamble con diferentes valores (Tabla 1).
+* En el paso 4 y 5 (Consensus).- se calcula de manera conjunta la tasa de error de secuenciación y la heterocigosidad en función de los recuentos de patrones de sitio en las lecturas agrupadas. Se utiliza un modelo diploide (es decir, se espera que se produzcan dos alelos por igual). Durante este paso, también se filtra el número máximo de sitios no determinados (*Ns*) por locus (*max_Ns_consens*). Se registra el número de alelos en cada locus y la información de profundidad de lectura también se almacena. En este paso de aplica el filtro *mindepth_statistical*, la mayoría de las estimaciones de tasas de error razonables es aproximadamente la profundidad mínima a la que se puede distinguir una llamada de base heterocigótica de un error de secuencia. El valor por defecto es *6* y se pretende hacer un ensamble con diferentes valores; sin embargo, ya que este valor no puede ser menor a 5, se utilizara *mindepth_majrule* para utilizar los valores 2 y 4 mientras se mantiene el valor por default de *mindepth_statistical* (Tabla 1).
 
 * El paso 6 (Clustering). agrupa las secuencias de consenso en todas las muestras utilizando el mismo método de ensamblaje que en el paso 3. Se muestrea aleatoriamente un alelo antes de la agrupación, de modo que los caracteres ambiguos tienen un menor efecto en la agrupación, pero los datos resultantes retienen información para los heterocigotos. Las secuencias agrupadas se alinean entonces usando nuevamente muscle. En este paso también se utiliza el filtro *clust_threshold*.
 
@@ -24,7 +24,8 @@ Tabla 1.- Parámetros de ipyrad que se probaran en diferentes combinaciones.
 
 | Parámetro            | Paso | Valor por defecto | Valores a probar        |
 |----------------------|------|-------------------|-------------------------|
-| mindepth_statistical |4 y 5 |         6         | 2; 4; 8; 10             |
+| mindepth_statistical |4 y 5 |         6         | 6; 6; 8; 10             |
+| mindepth_majrule     |4 y 5 |         6         | 2; 4; 8; 10             |
 | clust_threshold      |3 y 6 |       0.85        | 0.82; 0.88; 0.91; 0.94  |
 | max_SNPs_locus       |7     |     20 , 20       | 10, 10; 15, 15; 25, 25  |
 
@@ -32,13 +33,14 @@ Tabla 1.- Parámetros de ipyrad que se probaran en diferentes combinaciones.
 ![Tarea_2.jpg](Tarea_2.jpg)
 Figura 3. Diagrama que muestra el flujo de trabajo para encontrar el ensamble óptimo.  
 
-### Scripts para ejecutar ipyrad con cada parámetro
+### Script para ejecutar ipyrad realizando combinaciones de parámetros
 
-Script *ipyrad.sh*.- para descargar datos muestra de [ipirad](https://ipyrad.readthedocs.io/tutorial_advanced_cli.html#tutorial-advanced-cli) y crear el archivo con nuestros parámetros, demultiplexear y filtrar.
+Script *ipyrad.sh*.- para descargar datos muestra de [ipirad](https://ipyrad.readthedocs.io/tutorial_advanced_cli.html#tutorial-advanced-cli); demultiplexear; filtrar; ejecutar ipyrad con valores predeterminados; crear los diferentes archivos con los parámetros modificados; ejecutar ipyrad con cada parámetro.
+
 ```
 #!bin/bash
 
-## get sample data simulated for ipyrad.
+### get sample data simulated for ipyrad ###
 curl -LkO https://github.com/dereneaton/ipyrad/raw/master/tests/ipsimdata.tar.gz
 tar -xvzf ipsimdata.tar.gz
 rm ipsimdata.tar.gz # remove data
@@ -47,61 +49,68 @@ mv ipsimdata data_raw # change folder name
 #Create an ipyrad params defaults file
 ipyrad -n default
 
-#Create an ipyrad params file
-cp params-default.txt params-prub.txt
-
+### We use the data of pairgbs ###
 # Modify the parameters of the created file
-sed -i '/\[2] /c\./data_raw/pairgbs*  ## [2] ' params-prub.txt
-sed -i '/\[3] /c\./data_raw/pairgbs_example_barcodes.txt  ## [3] ' params-prub.txt
-sed -i '/\[7] /c\pairgbs  ## [7] ' params-prub.txt
-sed -i '/\[16] /c\2  ## [16] ' params-prub.txt
+sed -i '/\[2] /c\./data_raw/pairgbs*  ## [2] ' params-default.txt
+sed -i '/\[3] /c\./data_raw/pairgbs_example_barcodes.txt  ## [3] ' params-default.txt
+sed -i '/\[7] /c\pairgbs  ## [7] ' params-default.txt
+sed -i '/\[16] /c\2  ## [16] ' params-default.txtn  ## Remove adapters with a strict value
 
-# Demultiplex the raw data files
-ipyrad -p params-prub.txt -s 12
+# Execute ipyrad with the fault parameters
+ipyrad -p params-default.txt -s 1234567
 
-```
-
-
-Script *ipyrad_2.sh*.- para crear los archivos con los parámetros a probar.
-```
-#!bin/bash
-
-mkdir Parameters
+#### create the set of parameters ####
 
 # create the set of parameters for mindepth_statistical == mindepth_majrule
 for i in 2 4 8 10; do
+  ipyrad -p params-default.txt -b ms_$i
 # Modify the parameters of the created file
-sed '/\[11] /c\'$i'  ## [11] ' params-default.txt > ./Parameters/params-ms$i.txt
-sed -i '/\[12] /c\'$i'  ## [12] ' ./Parameters/params-ms$i.txt;
+sed -i '/\[0] /c\ms_'$i'  ## [0] ' params-ms_$i.txt
+sed -i '/\[11] /c\'$i'  ## [11] ' params-ms_$i.txt
+sed -i '/\[12] /c\'$i'  ## [12] ' params-ms_$i.txt;
 done
 
+# modify the values of mindepth_statistical = 6 when mindepth_majrule is 2 and 4
+sed -i '/\[11] /c\6  ## [11] ' params-ms_2.txt;
+sed -i '/\[11] /c\6  ## [11] ' params-ms_4.txt;
+
 # create the set of parameters for clust_threshold
-for i in 0.82 0.88 0.91 0.94; do
+for i in 82 88 91 94; do
+  ipyrad -p params-default.txt -b ct_$i
 # Modify the parameters of the created file
-sed '/\[14] /c\'$i'  ## [14] ' params-default.txt > ./Parameters/params-ct$i.txt;
+sed -i '/\[0] /c\ct_'$i'  ## [0] ' params-ct_$i.txt
+sed -i '/\[14] /c\0.'$i'  ## [14] ' params-ct_$i.txt;
 done
 
 # create the set of parameters for max_SNPs_locus
 for i in 10 15 25; do
+  ipyrad -p params-default.txt -b msnpl_$i
 # Modify the parameters of the created file
-sed '/\[22] /c\'$i', '$i'  ## [22] ' params-default.txt > ./Parameters/params-msnpl$i.txt;
+sed -i '/\[0] /c\msnpl_'$i'  ## [0] ' params-msnpl_$i.txt
+sed -i '/\[22] /c\'$i', '$i'  ## [22] ' params-msnpl_$i.txt;
 done
-```
-Script *ipyrad_3.sh*.- para ejecutar ipyrad con cada uno de los parametros seleccionados.
 
-```
-#!bin/bash
+### Execute the entire combination of parameters ###
 
-# Files with each parameter modified
-files="params-ct0.82.txt  params-ct0.91.txt  params-ms10.txt  params-ms4.txt  params-msnpl10.txt  params-msnpl25.txt params-ct0.88.txt  params-ct0.94.txt  params-ms2.txt   params-ms8.txt  params-msnpl15.txt"
+files="params-ct_82.txt
+params-ct_88.txt
+params-ct_91.txt
+params-ct_94.txt
+params-ms_10.txt
+params-ms_2.txt
+params-ms_4.txt
+params-ms_8.txt
+params-msnpl_10.txt
+params-msnpl_15.txt
+params-msnpl_25.txt"
 
 for k in $files; do
-# run ipyrad with each parameter selected
-ipyrad -p ./Parameters/${k} -s 34567 -f;
+# Demultiplex the raw data files
+ipyrad -p ${k} -s 34567 -f;
 done
 ```
 ### Discusión
-De acuerdo con Mastretta‐Yanes et al. (2015) el parámetro mas sensibles es la cobertura mínima, pero también el nivel de disimilitud de las secuencias puede ser un factor a tomar en cuenta para las regiones parálogas (Nadukkalam Ravindran et al., 2018). Por lo tanto, el protocolo sugerido en este trabajo toma ambas sugerencias. También el número máximo de SNP permitidos en un locus ha sido modificado en algunos análisis (Federman et al., 2018). En este protocolo se hicieron las modificaciones a los tres parámetros antes mencionados, se realizo un script para probar las modificaciones con datos generados por Eaton (2019). El script ipyrad.sh y ipyrad_2.sh se ejecutaron correctamente, sin embargo ipyrad_3.sh esta generando archivos con los parámetros modificados para *clust_threshold*. El problema es que los demas parametros estan siendo re-escritos para el parametro default *clust_threshold = 0.85*, por lo tanto no esta generando los archivos para cada uno de los parámetros de *mindepth_statistical* y *max_SNPs_locus*. Posiblemente se deba a que estoy ejecutando los scrips en la terminal, y en la pagina de  [ipyrad](https://ipyrad.readthedocs.io/index.html) existen scripts para generar multiples ensambles pero para ejecutar en [jupyter-notebooks](https://jupyter.org/).  
+De acuerdo con Mastretta‐Yanes et al. (2015) uno de los parámetro mas sensibles es la cobertura mínima, pero también el nivel de disimilitud de las secuencias puede ser un factor a tomar en cuenta para las regiones parálogas (Nadukkalam Ravindran et al., 2018). Por lo tanto, el protocolo sugerido en este trabajo toma ambas sugerencias. También el número máximo de SNP permitidos en un locus ha sido modificado en algunos análisis (Federman et al., 2018). En este protocolo se hicieron las modificaciones a los tres parámetros antes mencionados, se realizo un script para probar las modificaciones con datos generados por Eaton (2019). El script corre perfectamente y genera los archivos para cada parámetro modificado; sin embargo, aun falta realizar el script para analizar y comprara los diferentes ensambles. De acuerdo con varios artículos uno de los resultados a comparar es el número de loci y SNPs recuperados por cada ensamble, por lo cual sera el siguiente script a desarrollar.
 
 ### Literatura
 
@@ -121,6 +130,8 @@ Edgar, Robert C. (2010). Search and clustering orders of magnitude faster than B
 Federman, S., Donoghue, M. J., Daly, D. C., & Eaton, D. A. R. (2018). Reconciling species diversity in a tropical plant clade (Canarium, Burseraceae). PLOS ONE, 13(6), e0198882. https://doi.org/10.1371/journal.pone.0198882
 
 Goetze, M., Zanella, C. M., Palma‐Silva, C., Büttow, M. V., & Bered, F. (2017). Incomplete lineage sorting and hybridization in the evolutionary history of closely related, endemic yellow-flowered Aechmea species of subgenus Ortgiesia (Bromeliaceae). American Journal of Botany, 104(7), 1073-1087. https://doi.org/10.3732/ajb.1700103
+
+Herten, K., S Hestand, M., R Vermeesch, J., & Van Houdt, J. (2015). GBSX: A toolkit for experimental design and demultiplexing genotyping by sequencing experiments. BMC Bioinformatics, 16. https://doi.org/10.1186/s12859-015-0514-3
 
 Li, Q.-Q., Zhou, S.-D., Huang, D.-Q., He, X.-J., & Wei, X.-Q. (2016). Molecular phylogeny, divergence time estimates and historical biogeography within one of the world’s largest monocot genera. AoB PLANTS, 8. https://doi.org/10.1093/aobpla/plw041
 
